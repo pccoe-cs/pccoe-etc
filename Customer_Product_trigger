@@ -1,0 +1,43 @@
+8.Create Customer(Cid, CustName, City), Product(Pid, ProductName, Qty) and Order(Oid, Cid, Pid, Qty) tables. 1) Insert data into tables. 2) Write a trigger to update count of product in Product table when customer successfully paced order for particular product. Hint: Order will be placed when its entry will be inserted into order table.
+
+-- Creating Customer table CREATE TABLE Customer (
+Cid INT PRIMARY KEY, CustName VARCHAR(100), City VARCHAR(100)
+);
+
+-- Inserting data into Customer table
+INSERT INTO Customer (Cid, CustName, City) VALUES
+(1, 'John Doe', 'New York'),
+(2, 'Jane Smith', 'Los Angeles'),
+(3, 'Alice Brown', 'Chicago');
+
+-- Creating Product table CREATE TABLE Product (
+Pid INT PRIMARY KEY,
+ProductName VARCHAR(100), Qty INT
+);
+
+-- Inserting data into Product table
+INSERT INTO Product (Pid, ProductName, Qty) VALUES
+(1, 'Laptop', 50),
+ 
+(2, 'Phone', 100),
+(3, 'Headphones', 200);
+
+-- Creating Order table CREATE TABLE Order (
+Oid INT PRIMARY KEY, Cid INT,
+Pid INT, Qty INT,
+FOREIGN KEY (Cid) REFERENCES Customer(Cid), FOREIGN KEY (Pid) REFERENCES Product(Pid)
+);
+
+-- Inserting data into Order table INSERT INTO Order (Oid, Cid, Pid, Qty) VALUES
+(1, 1, 1, 2),
+(2, 2, 2, 3),
+(3, 3, 3, 1); DELIMITER $$
+CREATE TRIGGER update_product_qty AFTER INSERT ON Order
+FOR EACH ROW BEGIN
+-- Update the product quantity in Product table when an order is placed UPDATE Product
+SET Qty = Qty - NEW.Qty WHERE Pid = NEW.Pid;
+END $$ DELIMITER ;
+-- Inserting a new order into the Order table INSERT INTO Order (Oid, Cid, Pid, Qty)
+VALUES (4, 1, 2, 5); -- Customer with Cid 1 orders 5 units of Product with Pid 2 (Phone)
+
+-- Checking the updated Product table SELECT * FROM Product;
