@@ -1,0 +1,75 @@
+2	Identify primary keys and foreign keys for following database. Create tables and execute queries for given statements. employee(eid, ename, salary) assignment(projectid,eid) project(projectid,project_name,manager) manager(eid,ename) i)Modify eid to use auto_increment ii) Display Employees working in both projects 'Bank Management' and 'Content Management'. iii) Display average salary of organization. iv) Display employees who do not work on 'Bank Management' Project.
+v) Delete employee whose id is 5. vi) Display employee having highest salary in oraganization.
+
+CREATE TABLE employee (
+eid INT AUTO_INCREMENT PRIMARY KEY, ename VARCHAR(50),
+salary INT
+);
+
+CREATE TABLE manager ( eid INT PRIMARY KEY,
+ename VARCHAR(50)
+);
+
+CREATE TABLE project ( projectid INT PRIMARY KEY,
+project_name VARCHAR(100), manager INT,
+FOREIGN KEY (manager) REFERENCES manager(eid)
+);
+
+CREATE TABLE assignment ( projectid INT,
+eid INT,
+PRIMARY KEY (projectid, eid),
+FOREIGN KEY (projectid) REFERENCES project(projectid), FOREIGN KEY (eid) REFERENCES employee(eid)
+);
+
+INSERT INTO employee (ename, salary) VALUES ('Alice', 45000),
+('Bob', 38000),
+('Charlie', 42000),
+('David', 47000),
+('Eve', 39000);
+
+INSERT INTO manager (eid, ename) VALUES (1, 'Alice'),
+(4, 'David');
+
+
+mysql> INSERT INTO project (projectid, project_name, manager) VALUES (101, 'Bank Management', 1),
+ 
+(102, 'Content Management', 4),
+(103, 'E-Commerce', 1);
+
+INSERT INTO assignment (projectid, eid) VALUES (101, 1),
+(101, 2),
+(102, 1),
+(102, 3),
+(103, 4),
+(103, 5);
+
+2.
+SELECT e.ename FROM employee e
+JOIN assignment a1 ON e.eid = a1.eid
+JOIN project p1 ON a1.projectid = p1.projectid JOIN assignment a2 ON e.eid = a2.eid
+JOIN project p2 ON a2.projectid = p2.projectid
+WHERE p1.project_name = 'Bank Management' AND p2.project_name = 'Content Management';
+
+3.
+SELECT AVG(salary) AS average_salary FROM employee;
+
+4.
+SELECT e.ename FROM employee e
+WHERE e.eid NOT IN (
+SELECT a.eid FROM assignment a
+JOIN project p ON a.projectid = p.projectid WHERE p.project_name = 'Bank Management'
+);
+
+
+6.
+SELECT ename, salary FROM employee
+WHERE salary = (SELECT MAX(salary) FROM employee);
+
+
+5.
+
+ALTER TABLE assignment
+DROP FOREIGN KEY assignment_ibfk_2; ALTER TABLE assignment
+ 
+ADD CONSTRAINT assignment_ibfk_2 FOREIGN KEY (eid)
+REFERENCES employee (eid) ON DELETE CASCADE
