@@ -1,0 +1,61 @@
+12 Identify primary keys and foreign keys for following database. Create tables and execute queries for given statements. supplier(supplierid,sname,saddress) parts(part_id,part_name,color); catalog(supplierid,part_id,cost); 1)Find name of supplier who supply ‘green’ parts. 2)find name of suppliers who supply both blue and green parts. 3)Find supplier who supply all parts. 4)Fid total cost of red parts. 5) Find supplier who supply green parts with minimum cost. 6)Update color of part having part_id = 4 and supplier_id = 2
+
+CREATE TABLE supplier ( supplierid INT PRIMARY KEY, sname VARCHAR(50),
+saddress VARCHAR(100)
+);
+
+CREATE TABLE parts (
+part_id INT PRIMARY KEY, part_name VARCHAR(50), color VARCHAR(20)
+);
+
+CREATE TABLE catalog ( supplierid INT,
+part_id INT,
+cost DECIMAL(10,2),
+PRIMARY KEY (supplierid, part_id),
+FOREIGN KEY (supplierid) REFERENCES supplier(supplierid), FOREIGN KEY (part_id) REFERENCES parts(part_id)
+);
+
+-- Insert sample data (you can replace with your own data)
+INSERT INTO supplier VALUES (1, 'Supplier A', 'Address A'),
+(2, 'Supplier B', 'Address B'),
+(3, 'Supplier C', 'Address C');
+
+INSERT INTO parts VALUES (1, 'Part 1', 'Red'),
+(2, 'Part 2', 'Green'),
+(3, 'Part 3', 'Blue');
+
+INSERT INTO catalog VALUES (1, 1, 10.00),
+ 
+(1, 2, 15.00),
+(2, 2, 12.00),
+(2, 3, 20.00),
+(3, 1, 8.00),
+(3, 2, 18.00);
+
+1.
+SELECT s.sname FROM supplier s
+JOIN catalog c ON s.supplierid = c.supplierid JOIN parts p ON c.part_id = p.part_id WHERE p.color = 'green';
+
+2.
+SELECT s.sname FROM supplier s
+JOIN catalog c ON s.supplierid = c.supplierid JOIN parts p ON c.part_id = p.part_id GROUP BY s.sname
+HAVING SUM(p.color = 'blue') > 0 AND SUM(p.color = 'green') > 0;
+
+3.
+SELECT s.sname FROM supplier s
+WHERE (SELECT COUNT(DISTINCT p.part_id) FROM catalog c JOIN parts p ON c.part_id = p.part_id WHERE c.supplierid = s.supplierid) = (SELECT COUNT(*) FROM parts);
+
+4.
+SELECT SUM(c.cost) AS total_cost FROM catalog c
+JOIN parts p ON c.part_id = p.part_id WHERE p.color = 'red';
+
+5.
+SELECT s.sname FROM supplier s
+JOIN catalog c ON s.supplierid = c.supplierid JOIN parts p ON c.part_id = p.part_id WHERE p.color = 'green'
+GROUP BY s.sname
+HAVING MIN(c.cost) = (SELECT MIN(c.cost) FROM catalog c JOIN parts p ON c.part_id = p.part_id WHERE p.color = 'green');
+ 
+6.
+UPDATE parts SET color = 'yellow'
+WHERE part_id = 4 AND EXISTS (SELECT 1 FROM catalog c WHERE c.part_id = 4 AND c.supplierid
+= 2);
