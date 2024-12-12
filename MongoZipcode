@@ -1,0 +1,35 @@
+15. Design and Develop MongoDB Queries & use aggregation and indexing Create ‘zipcode’ collection with city,state & population Insert atleast 10 records with different variations. Execute following queries.
+i)Display records from collection. ii)Display total population statewise. iii) Display total population statewise where population > 20000. iv)Display average populations for cities in each state. v) Display smallest and largest population for each state.cities by
+
+
+db.zipcode.insertMany([
+{ city: "City1", state: "State1", population: 5000 },
+{ city: "City2", state: "State1", population: 10000 },
+{ city: "City3", state: "State2", population: 15000 },
+{ city: "City4", state: "State2", population: 25000 },
+{ city: "City5", state: "State3", population: 3000 },
+{ city: "City6", state: "State3", population: 7000 },
+{ city: "City7", state: "State4", population: 22000 },
+{ city: "City8", state: "State4", population: 32000 },
+{ city: "City9", state: "State5", population: 10000 },
+{ city: "City10", state: "State5", population: 18000 }
+]);
+db.zipcode.find({}); db.zipcode.aggregate([
+{ $group: { _id: "$state", total_population: { $sum: "$population" } } }
+]);
+
+db.zipcode.aggregate([
+{ $match: { population: { $gt: 20000 } } },
+{ $group: { _id: "$state", total_population: { $sum: "$population" } } }
+]);
+
+db.zipcode.aggregate([
+{ $group: { _id: "$state", average_population: { $avg: "$population" } } }
+]);
+
+db.zipcode.aggregate([
+{ $group: {
+_id: "$state",
+min_population: { $min: "$population" }, max_population: { $max: "$population" }
+} }
+]);
