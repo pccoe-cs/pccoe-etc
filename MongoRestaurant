@@ -1,0 +1,72 @@
+
+3 Design Mongo DB Schema for Restaurant having RestaurantId, Name, Cuisine, Score, Address i) Write a MongoDB query to display all the documents in the collection restaurants. ii) Write a MongoDB query to display all the documents in the collection restaurants with fields Name, Cuisine, Score and exclude Id and Address iii) Write a MongoDB query to find the restaurants who achieved a score more than 80. iv) Write a MongoDB query to find the restaurant having highest score. Write a MongoDB query to find the count of restaurants for each cuisine
+use myDatabase; db.createCollection("restaurants"); db.restaurants.insertMany([
+{
+"RestaurantId": "R001",
+"Name": "The Gourmet Kitchen", "Cuisine": "Italian",
+"Score": 85,
+"Address": {
+"Street": "123 Pasta Lane", "City": "Rome",
+"Zipcode": "10001"
+}
+},
+{
+"RestaurantId": "R002", "Name": "Sushi Haven", "Cuisine": "Japanese", "Score": 92,
+"Address": {
+"Street": "456 Sashimi Ave", "City": "Tokyo",
+"Zipcode": "20002"
+}
+},
+{
+"RestaurantId": "R003", "Name": "Burger Palace", "Cuisine": "American", "Score": 78,
+"Address": {
+"Street": "789 Burger Blvd", "City": "New York", "Zipcode": "30003"
+}
+},
+ 
+{
+"RestaurantId": "R004", "Name": "Spicy Tadka", "Cuisine": "Indian", "Score": 88,
+"Address": {
+"Street": "321 Curry Road", "City": "Delhi",
+"Zipcode": "40004"
+}
+},
+{
+"RestaurantId": "R005", "Name": "Dragon Wok", "Cuisine": "Chinese", "Score": 82,
+"Address": {
+"Street": "654 Noodle Street", "City": "Beijing",
+"Zipcode": "50005"
+}
+}
+]);
+
+db.restaurants.find();
+db.restaurants.find({}, { Address: 0, _id: 0 }); db.restaurants.find({ Score: { $gt: 80 } }); db.restaurants.find().sort({ Score: -1 }).limit(1); db.restaurants.aggregate([
+{ $group: { _id: "$Cuisine", count: { $sum: 1 } } }
+]);
+ 
+.9 Design and Develop MongoDB Queries & use aggregation and indexing Create ‘zipcode’ collection with city,state & population Insert atleast 10 records with different variations. Execute following queries.
+i)Display records from collection. ii)Display total population statewise. iii) Display total population statewise where population > 20000. iv)Create index on state. v) Display all index for collection.
+
+// Create 'zipcode' collection and insert data db.zipcode.insertMany([
+{ city: "Mumbai", state: "Maharashtra", population: 12478447 },
+{ city: "Delhi", state: "Delhi", population: 11007835 },
+{ city: "Bangalore", state: "Karnataka", population: 8436675 },
+{ city: "Hyderabad", state: "Telangana", population: 6809970 },
+{ city: "Ahmedabad", state: "Gujarat", population: 5577940 },
+{ city: "Chennai", state: "Tamil Nadu", population: 7090000 },
+{ city: "Kolkata", state: "West Bengal", population: 4486679 },
+{ city: "Pune", state: "Maharashtra", population: 3124458 },
+{ city: "Surat", state: "Gujarat", population: 4467797 },
+{ city: "Jaipur", state: "Rajasthan", population: 3073350 }
+]);
+db.zipcode.find(); db.zipcode.aggregate([
+{ $group: { _id: "$state", totalPopulation: { $sum: "$population" } } }
+]);
+
+db.zipcode.aggregate([
+{ $group: { _id: "$state", totalPopulation: { $sum: "$population" } } },
+{ $match: { totalPopulation: { $gt: 20000 } } }
+]);
+
+db.zipcode.createIndex({ state: 1 }); db.zipcode.getIndexes();
