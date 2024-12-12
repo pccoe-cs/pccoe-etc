@@ -1,0 +1,20 @@
+13 Design and Develop MongoDB Queries Create ‘users’ collection with name,age and status. Insert atleast 10 records with different variations. Execute following queries. i)Display first five records from collection. ii)Update status as “rejected” if age is less than 18. iii)Delete the record of user whose name is ‘Akshata’l iv)Delete records having age greater than 50 v)Display users having age less than 40 and status = ‘paid’
+db.createCollection('users'); db.users.insertMany([
+{ name: "John", age: 25, status: "paid" },
+{ name: "Akshata", age: 17, status: "pending" },
+{ name: "Raj", age: 30, status: "paid" },
+{ name: "Ravi", age: 45, status: "unpaid" },
+{ name: "Priya", age: 20, status: "paid" },
+{ name: "Sara", age: 35, status: "pending" },
+{ name: "Nina", age: 15, status: "unpaid" },
+{ name: "Mike", age: 28, status: "paid" },
+{ name: "Amit", age: 40, status: "rejected" },
+{ name: "Riya", age: 60, status: "unpaid" }
+]);
+
+db.users.find().limit(5);
+
+db.users.updateMany({ age: { $lt: 18 } }, { $set: { status: "rejected" } }); db.users.deleteOne({ name: "Akshata" });
+db.users.deleteMany({ age: { $gt: 50 } });
+
+db.users.find({ age: { $lt: 40 }, status: "paid" });
